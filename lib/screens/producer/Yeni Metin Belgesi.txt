@@ -1,0 +1,94 @@
+import 'package:flutter/material.dart';
+import '../../services/ipfs_service.dart';
+import '../producer/update_product_screen.dart';
+class VerifyProductScreen extends StatefulWidget {
+  const VerifyProductScreen({super.key});
+
+  @override
+  State<VerifyProductScreen> createState() => _VerifyProductScreenState();
+}
+
+class _VerifyProductScreenState extends State<VerifyProductScreen> {
+  final TextEditingController _productIdController = TextEditingController();
+  String? _errorText;
+  bool _loading = false;
+
+  void _verifyProductId() async {
+  final enteredId = _productIdController.text.trim();
+  if (enteredId.isEmpty) {
+    setState(() => _errorText = "Lütfen bir ürün ID girin");
+    return;
+  }
+
+  setState(() {
+    _errorText = null;
+    _loading = true;
+  });
+
+  final result = await IPFSService.getProductById(enteredId);
+  setState(() => _loading = false);
+
+  if (result == null) {
+    setState(() => _errorText = "Ürün bulunamadı veya IPFS hatası.");
+    return;
+  }
+
+  // ✅ Tüm iç içe yapıları temizle
+  Map<String, dynamic> flatten(Map data) {
+    while (data.containsKey('data') && data['data'] is Map) {
+      data = Map<String, dynamic>.from(data['data']);
+    }
+    return Map<String, dynamic>.from(data);
+  }
+
+  final productData = flatten(result);
+  final ipfsProductId = productData['productId'];
+
+  if (ipfsProductId != null && ipfsProductId.toString().toLowerCase() == enteredId.toLowerCase()) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UpdateProductScreen(
+          ipfsContent: productData,
+          productId: enteredId,
+        ),
+      ),
+    );
+  } else {
+    setState(() => _errorText = "Ürün ID eşleşmedi.");
+  }
+}
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Ürün Doğrulama")),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            const Text("🔐 Lütfen ürün ID'sini girin"),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _productIdController,
+              decoration: InputDecoration(
+                labelText: "Ürün ID (örn: PHONE-001)",
+                errorText: _errorText,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            _loading
+                ? const CircularProgressIndicator()
+                : ElevatedButton.icon(
+                    icon: const Icon(Icons.check),
+                    label: const Text("Doğrula"),
+                    onPressed: _verifyProductId,
+                  ),
+          ],
+        ),
+      ),
+    );
+  }
+}

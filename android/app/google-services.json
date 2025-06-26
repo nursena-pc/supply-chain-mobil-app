@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1061122637638",
+    "project_id": "tedarik-zinciri",
+    "storage_bucket": "tedarik-zinciri.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1061122637638:android:7cd6c184b32d9942f16f47",
+        "android_client_info": {
+          "package_name": "com.tedarikzinciri.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1061122637638-hsnkfg8gqg7j35ovsvn90s5q6t7vab6j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tedarikzinciri.app",
+            "certificate_hash": "f203727db995b3230c525421be1cab32eb729833"
+          }
+        },
+        {
+          "client_id": "1061122637638-64pb8r1ccdmrs7oahs3lq4ioqtjp1hqa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDc7WVeJEjMA--CCo657rWlx_Lc-H6XPKU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1061122637638-64pb8r1ccdmrs7oahs3lq4ioqtjp1hqa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
