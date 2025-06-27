@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tedarik_final/services/ipfs_service.dart';
 import 'package:tedarik_final/widgets/product_verification_dialog.dart';
 import 'package:tedarik_final/screens/producer/update_product_screen.dart';
+import 'package:tedarik_final/screens/producer/add_product_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -41,12 +42,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> verifyProductIdAndNavigate(String productId) async {
     final result = await IPFSService.getProductById(productId);
-  if (result != null) {
-    final productJson = Map<String, dynamic>.from(result);
-    Navigator.push(context,
-      MaterialPageRoute(builder: (_) => UpdateProductScreen(ipfsContent: productJson, productId: productId)));
-  }
-  else {
+    if (result != null) {
+      final productJson = Map<String, dynamic>.from(result);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => UpdateProductScreen(ipfsContent: productJson, productId: productId),
+        ),
+      );
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("❌ Ürün bulunamadı veya IPFS erişim hatası.")),
       );
@@ -59,7 +63,12 @@ class _HomeScreenState extends State<HomeScreen> {
       {
         'label': 'Ürün Ekle',
         'icon': Icons.add_box,
-        'route': '/addProduct',
+        'action': () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AddProductScreen()),
+          );
+        },
       },
       {
         'label': 'Ürün Güncelle',
@@ -116,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               leading: const Icon(Icons.switch_account),
               title: const Text("Hesap Değiştir"),
-              onTap: _signOut, // İstersen farklı metod yazabiliriz
+              onTap: _signOut,
             ),
             const Divider(),
             const ListTile(
@@ -127,59 +136,58 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          ElevatedButton(
-            onPressed: () => Navigator.pushNamed(context, '/test-get'),
-            child: const Text("🧪 GetProduct Test"),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: GridView.builder(
-              itemCount: menuItems.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              itemBuilder: (context, index) {
-                final item = menuItems[index];
-                return GestureDetector(
-                  onTap: () async {
-                    if (item.containsKey('action')) {
-                      await item['action']();
-                    } else if (item['route'] != null) {
-                      Navigator.pushNamed(context, item['route']);
-                    }
-                  },
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    color: Colors.green[100],
-                    elevation: 4,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(item['icon'], size: 48, color: Colors.green[800]),
-                        const SizedBox(height: 10),
-                        Text(
-                          item['label'],
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/test-get'),
+              child: const Text("🧪 GetProduct Test"),
             ),
-          ),
-        ],
+            const SizedBox(height: 16),
+            Expanded(
+              child: GridView.builder(
+                itemCount: menuItems.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                ),
+                itemBuilder: (context, index) {
+                  final item = menuItems[index];
+                  return GestureDetector(
+                    onTap: () async {
+                      if (item.containsKey('action')) {
+                        await item['action']();
+                      } else if (item['route'] != null) {
+                        Navigator.pushNamed(context, item['route']);
+                      }
+                    },
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      color: Colors.green[100],
+                      elevation: 4,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(item['icon'], size: 48, color: Colors.green[800]),
+                          const SizedBox(height: 10),
+                          Text(
+                            item['label'],
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-
     );
   }
 }
