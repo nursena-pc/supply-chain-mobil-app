@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // 👈 kopyalama için gerekli
+import 'package:flutter/services.dart';
 import 'package:tedarik_final/screens/common/qr_scanner_screen.dart';
+import 'package:intl/intl.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   final Map<String, dynamic> productData;
@@ -11,10 +12,20 @@ class ProductDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final fullData = productData;
     final device = fullData['device'] ?? {};
-    final status = fullData['status'] ?? '';
-    final timestamp = fullData['timestamp']?.toString() ?? '';
-    final timestamps = fullData['timestamps'] ?? {};
-    final cid = productData['cid'] ?? ''; // 👈 CID varsa göster
+    final status = (fullData['status'] ?? '').toString().trim();
+    final cid = fullData['cid'] ?? '';
+    final timestampsRaw = fullData['timestamps'] ?? {};
+
+    final Map<String, dynamic> timestamps = Map<String, dynamic>.from(timestampsRaw);
+
+    // Stepper için zamanları formatla
+    final Map<String, String> formattedTimeMap = {
+      for (final entry in timestamps.entries)
+        entry.key.toString().trim(): _formatTimestamp(entry.value?.toString())
+    };
+
+    // Geçerli statüye karşılık gelen zaman
+    final String selectedTime = formattedTimeMap[status] ?? "-";
 
     return Scaffold(
       appBar: AppBar(
@@ -26,7 +37,7 @@ class ProductDetailScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              _buildStepper(status, timestamps),
+              _buildStepper(status, formattedTimeMap),
               const SizedBox(height: 24),
               Card(
                 elevation: 4,
@@ -48,15 +59,13 @@ class ProductDetailScreen extends StatelessWidget {
                       _infoTile("Garanti (yıl)", device['warrantyYears']?.toString()),
                       const Divider(),
                       _infoTile("📍 Konum", fullData['location']),
-                      _infoTile("⏱️ Zaman", timestamp),
-
-                      // ✅ CID gösterme ve kopyalama butonu
+                      _infoTile("⏱️ Zaman", selectedTime),
                       if (cid.toString().isNotEmpty) ...[
                         const Divider(),
                         const Text("📄 CID", style: TextStyle(fontWeight: FontWeight.w500)),
                         Row(
                           children: [
-                            Expanded(child: Text(cid, style: const TextStyle(fontSize: 12))),
+                            Expanded(child: Text(cid.toString(), style: const TextStyle(fontSize: 12))),
                             IconButton(
                               icon: const Icon(Icons.copy),
                               onPressed: () {
@@ -105,9 +114,7 @@ class ProductDetailScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.popUntil(context, (route) => route.isFirst);
-                },
+                onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
                 icon: const Icon(Icons.home),
                 label: const Text("Ana Menüye Dön"),
                 style: ElevatedButton.styleFrom(
@@ -121,12 +128,10 @@ class ProductDetailScreen extends StatelessWidget {
           ],
         ),
       ),
-
-
     );
   }
 
-  Widget _buildStepper(String status, Map<String, dynamic> timestamps) {
+  Widget _buildStepper(String status, Map<String, String> timestamps) {
     final steps = [
       {'label': 'Üretildi', 'icon': Icons.factory},
       {'label': 'Depoda', 'icon': Icons.warehouse},
@@ -134,13 +139,15 @@ class ProductDetailScreen extends StatelessWidget {
       {'label': 'Teslim Edildi', 'icon': Icons.home},
     ];
 
-    final currentIndex = steps.indexWhere((step) => step['label'] == status);
+    final currentIndex = steps.indexWhere((step) => step['label'].toString().trim() == status);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: steps.map((step) {
+        final label = step['label'].toString().trim();
         final index = steps.indexOf(step);
         final isCompleted = index <= currentIndex;
+        final time = timestamps[label] ?? "-";
 
         return Expanded(
           child: Column(
@@ -155,12 +162,12 @@ class ProductDetailScreen extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                step['label'] as String,
+                label,
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 12, color: isCompleted ? Colors.green[800] : Colors.grey),
               ),
               Text(
-                timestamps[step['label']]?.toString() ?? '-',
+                time,
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 10, color: Colors.grey),
               ),
@@ -186,4 +193,25 @@ class ProductDetailScreen extends StatelessWidget {
       ),
     );
   }
+
+  String _formatTimestamp(String? isoString) {
+  if (isoString == null || isoString.isEmpty) return "-";
+  try {
+    final dt = DateTime.parse(isoString).toLocal();
+    // Türkçe manuel formatlama
+    final monthsTr = [
+      '', 'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+      'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+    ];
+    final day = dt.day;
+    final month = monthsTr[dt.month];
+    final year = dt.year;
+    final hour = dt.hour.toString().padLeft(2, '0');
+    final minute = dt.minute.toString().padLeft(2, '0');
+    return '$day $month $year - $hour:$minute';
+  } catch (e) {
+    return "-";
+  }
+}
+
 }

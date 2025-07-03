@@ -5,6 +5,8 @@ import 'package:tedarik_final/services/ipfs_service.dart';
 import 'package:tedarik_final/widgets/product_verification_dialog.dart';
 import 'package:tedarik_final/screens/producer/update_product_screen.dart';
 import 'package:tedarik_final/screens/producer/add_product_screen.dart';
+import 'package:tedarik_final/screens/analytics/user_analytics_screen.dart';
+import 'package:tedarik_final/screens/analytics/analytics_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -90,6 +92,18 @@ class _HomeScreenState extends State<HomeScreen> {
         'icon': Icons.history,
         'route': '/history',
       },
+      {
+        'label': 'Analiz',
+        'icon': Icons.bar_chart,
+        'action': () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AnalyticsScreen()),
+          );
+        },
+      },
+
+
       {
         'label': 'Ayarlar',
         'icon': Icons.settings,

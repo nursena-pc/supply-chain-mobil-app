@@ -6,7 +6,7 @@ import 'dart:convert';
 class BlockchainService {
   final String rpcUrl = "https://carrot.megaeth.com/rpc";
   final String privateKey = "0xfeeb9498264a29e2a068e44715c15353dbb833ec138aa039aa8859ed5696e707";
-  final String contractAddress = "0xB88b6037781004381D0c4B3B5eFE0a8D8400eD03";
+  final String contractAddress = "0x516aa896560e95A998e0097F1aD450fb581EB174";
 
   late Web3Client _client;
   late EthPrivateKey _credentials;

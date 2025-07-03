@@ -9,7 +9,7 @@ class ContractService {
 
   final String rpcUrl = 'https://carrot.megaeth.com/rpc'; // 🥕 MegaEth Testnet
   final String privateKey = '0xfeeb9498264a29e2a068e44715c15353dbb833ec138aa039aa8859ed5696e707'; // Production’da güvenli saklanmalı!
-  final String contractAddress = '0x3860ad3F5a387bDbB5743582BE41E17cC463eF12';
+  final String contractAddress = '0x516aa896560e95A998e0097F1aD450fb581EB174';
 
   late EthereumAddress _contractEthereumAddress;
   late Credentials _credentials;

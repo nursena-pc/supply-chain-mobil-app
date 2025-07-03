@@ -62,59 +62,68 @@ class AuthService {
 
 
   // Email & Şifre ile Kayıt
- Future<UserModel?> registerWithEmailAndSave(String email, String password, BuildContext context) async {
+ Future<UserModel?> registerWithEmailAndSave(
+  String email,
+  String password,
+  BuildContext context, {
+  required String name,
+  required String phone,
+  required DateTime birthDate,
+}) async {
   try {
-    UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+    UserCredential result = await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
     User? user = result.user;
 
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Kullanıcı oluşturulamadı"))
-);
+        const SnackBar(content: Text("Kullanıcı oluşturulamadı")),
+      );
       return null;
     }
 
     // Firestore kaydı
     await _firestore.collection('users').doc(user.uid).set({
       'email': email,
+      'name': name,
+      'phone': phone,
+      'birthDate': Timestamp.fromDate(birthDate),
       'createdAt': FieldValue.serverTimestamp(),
       'role': 'unknown',
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text("Firestore'a kayıt başarılı"))
-);
     return UserModel(
       uid: user.uid,
       email: user.email ?? email,
       role: 'unknown',
     );
-
   } on FirebaseAuthException catch (e) {
     if (e.code == 'email-already-in-use') {
       ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Bu e-posta zaten kayıtlı"))
-);
+        const SnackBar(content: Text("Bu e-posta zaten kayıtlı")),
+      );
     } else if (e.code == 'weak-password') {
       ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Şifre çok zayıf"))
-);
+        const SnackBar(content: Text("Şifre çok zayıf")),
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Firebase Auth hatası"))
-);
+        const SnackBar(content: Text("Firebase Auth hatası")),
+      );
     }
-    print("registerWithEmailAndSave hatası: $e");
+    debugPrint("registerWithEmailAndSave hatası: $e");
     return null;
-
   } catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text("BEklenmeyen hata oluştu"))
-);
-    print("registerWithEmailAndSave genel hata: $e");
+      const SnackBar(content: Text("Beklenmeyen hata oluştu")),
+    );
+    debugPrint("registerWithEmailAndSave genel hata: $e");
     return null;
   }
 }
+
 
 
 
@@ -126,10 +135,6 @@ class AuthService {
       scopes: ['email'],
       forceCodeForRefreshToken: true,
     );
-
-    // Oturumu tamamen kopar, önbelleği temizle
-    await _googleSignIn.disconnect();
-    await _googleSignIn.signOut();
 
     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 

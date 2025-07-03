@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tedarik_final/services/ipfs_service.dart';
 import 'package:tedarik_final/screens/producer/share_qr_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SubmitButton extends StatelessWidget {
   final TextEditingController productIdController;
@@ -29,10 +30,12 @@ class SubmitButton extends StatelessWidget {
   Future<void> _handleSubmit(BuildContext context) async {
     final productId = productIdController.text.trim();
     final nowUtc = DateTime.now().toUtc().toIso8601String(); // ✅ Şu anki zaman
+    final userUid = FirebaseAuth.instance.currentUser?.uid ?? "anon"; // ✅ UID çekildi
 
     final data = {
       "productId": productId,
-      "owner": "0x...", // TODO: Cüzdan adresi eklenecek
+      "owner": "0x...",
+      "userUid": userUid, // TODO: Cüzdan adresi eklenecek
       "status": status,
       "device": {
         "brand": brandController.text.trim(),

@@ -85,6 +85,11 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
     previousData['location'] = newLocation;
     previousData['timestamp'] = newTimestamp;
 
+    // ✅ timestamps alanını da güncelle
+    final Map<String, dynamic> timestamps = Map<String, dynamic>.from(previousData['timestamps'] ?? {});
+    timestamps[newStatus] = newTimestamp;
+    previousData['timestamps'] = timestamps;
+
     final newCid = await IPFSService.uploadJSON(previousData);
 
     if (newCid != null) {
@@ -99,19 +104,15 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
             ? '✅ Güncelleme başarılı. Yeni CID: $newCid'
             : '⚠️ CID yüklendi ama blockchain kaydı başarısız.';
       });
-      if (success) {
-  if (mounted) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ShareQRScreen(
-          cid: newCid,
-        ),
-      ),
-    );
-  }
-}
 
+      if (success && mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ShareQRScreen(cid: newCid),
+          ),
+        );
+      }
 
     } else {
       setState(() {
@@ -148,7 +149,6 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
                   style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
 
-              // Durum: dropdown
               DropdownButtonFormField<String>(
                 value: statusController.text.isNotEmpty ? statusController.text : null,
                 items: durumlar.map((durum) {
@@ -169,7 +169,6 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Konum: autocomplete
               Autocomplete<String>(
                 optionsBuilder: (TextEditingValue textEditingValue) {
                   if (textEditingValue.text == '') return const Iterable<String>.empty();

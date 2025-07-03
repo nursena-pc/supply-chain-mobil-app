@@ -1,5 +1,4 @@
-{
-  "abi": [
+[
     {
       "anonymous": false,
       "inputs": [
@@ -13,6 +12,12 @@
           "indexed": false,
           "internalType": "string",
           "name": "ipfsHash",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "status",
           "type": "string"
         }
       ],
@@ -55,11 +60,29 @@
           "internalType": "string",
           "name": "ipfsHash",
           "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "status",
+          "type": "string"
         }
       ],
       "name": "createProduct",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getAllProductIds",
+      "outputs": [
+        {
+          "internalType": "string[]",
+          "name": "",
+          "type": "string[]"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -82,6 +105,25 @@
           "name": "",
           "type": "address"
         },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "productIds",
+      "outputs": [
         {
           "internalType": "string",
           "name": "",
@@ -143,5 +185,4 @@
       "stateMutability": "nonpayable",
       "type": "function"
     }
-  ]
-}
+]
