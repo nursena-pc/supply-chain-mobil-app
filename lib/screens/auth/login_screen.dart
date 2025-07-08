@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../services/auth_service.dart'; 
+import '../../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,20 +14,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _signInWithEmail() async {
     final user = await AuthService().signInWithEmail(
-      
       emailController.text.trim(),
       passwordController.text.trim(),
-      context
+      context,
     );
 
     if (user != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-       const SnackBar(content: Text("Giriş başarılı"))
-);      Navigator.pushReplacementNamed(context, '/home');
+        const SnackBar(content: Text("Giriş başarılı")),
+      );
+      Navigator.pushReplacementNamed(context, '/home');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Giriş başarısız"))
-);
+        const SnackBar(content: Text("Giriş başarısız")),
+      );
     }
   }
 
@@ -36,20 +36,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (user != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Google ile giriş başarılı"))
-);
+        const SnackBar(content: Text("Google ile giriş başarılı")),
+      );
       Navigator.pushReplacementNamed(context, '/home');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Google ile giriş başarısız"))
-);
+        const SnackBar(content: Text("Google ile giriş başarısız")),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final bgColor = isDark ? Colors.black : const Color(0xFFEFF4F8);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFEFF4F8),
+      backgroundColor: bgColor,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -58,42 +62,70 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               Image.asset('assets/images/login.png', height: 180),
               const SizedBox(height: 32),
-              const Text(
+              Text(
                 "Tedarik Mobil'e Giriş Yap",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: textColor,
+                ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: emailController,
-                decoration: const InputDecoration(
+                style: TextStyle(color: textColor),
+                decoration: InputDecoration(
                   labelText: 'E-mail',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: textColor),
+                  border: const OutlineInputBorder(),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: isDark ? Colors.grey : Colors.black26),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(
+                style: TextStyle(color: textColor),
+                decoration: InputDecoration(
                   labelText: 'Şifre',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: textColor),
+                  border: const OutlineInputBorder(),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: isDark ? Colors.grey : Colors.black26),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _signInWithEmail,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  minimumSize: const Size.fromHeight(50),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                ),
                 child: const Text("Giriş Yap"),
               ),
               TextButton(
                 onPressed: () => Navigator.pushNamed(context, '/register'),
-                child: const Text("Hesabın yok mu? Kayıt ol"),
+                child: Text(
+                  "Hesabın yok mu? Kayıt ol",
+                  style: TextStyle(color: isDark ? Colors.grey[300] : Colors.black),
+                ),
               ),
-              const Divider(height: 40),
+              Divider(height: 40, color: isDark ? Colors.grey[600] : Colors.black26),
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   icon: Image.asset('assets/icons/google.png', height: 24),
                   label: const Text("Google ile Giriş Yap"),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: textColor,
+                    side: BorderSide(color: isDark ? Colors.grey : Colors.black45),
+                    minimumSize: const Size.fromHeight(50),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  ),
                   onPressed: _signInWithGoogle,
                 ),
               ),

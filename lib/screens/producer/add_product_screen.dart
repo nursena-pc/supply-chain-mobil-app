@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:tedarik_final/screens/producer/add_product/brand_model_input.dart';
 import 'package:tedarik_final/screens/producer/add_product/location_selector.dart';
-import 'package:tedarik_final/screens/producer/add_product/manufacture_date_picker.dart';
 import 'package:tedarik_final/screens/producer/add_product/product_id_generator.dart';
 import 'package:tedarik_final/screens/producer/add_product/production_date_input.dart';
 import 'package:tedarik_final/screens/producer/add_product/status_dropdown.dart';
 import 'package:tedarik_final/screens/producer/add_product/submit_button.dart';
 import 'package:tedarik_final/screens/producer/add_product/serial_warranty_input.dart';
-import 'package:tedarik_final/screens/producer/add_product/location_selector.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -21,7 +19,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final TextEditingController brandController = TextEditingController();
   final TextEditingController modelController = TextEditingController();
   final TextEditingController serialNumberController = TextEditingController();
-  final TextEditingController manufactureDateController = TextEditingController();
   final TextEditingController warrantyYearsController = TextEditingController();
   final TextEditingController productionDateController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
@@ -34,7 +31,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
   void initState() {
     super.initState();
     productIdController.text = ProductIdGenerator.generate();
-
     selectedProductionDate = DateTime.now();
     productionDateController.text = selectedProductionDate!.toIso8601String().split('T').first;
   }
@@ -45,7 +41,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
     brandController.dispose();
     modelController.dispose();
     serialNumberController.dispose();
-    manufactureDateController.dispose();
     warrantyYearsController.dispose();
     productionDateController.dispose();
     locationController.dispose();
@@ -54,6 +49,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final inputBorderColor = isDark ? Colors.grey[600]! : Colors.grey[300]!;
+    final labelColor = isDark ? Colors.white : Colors.black;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ürün Ekle'),
@@ -67,9 +66,19 @@ class _AddProductScreenState extends State<AddProductScreen> {
             TextField(
               controller: productIdController,
               readOnly: true,
-              decoration: const InputDecoration(
+              style: TextStyle(color: labelColor),
+              decoration: InputDecoration(
                 labelText: 'Ürün ID',
-                border: OutlineInputBorder(),
+                labelStyle: TextStyle(color: labelColor),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: inputBorderColor),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: inputBorderColor),
+                ),
+                disabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: inputBorderColor),
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -84,9 +93,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
               serialController: serialNumberController,
               warrantyController: warrantyYearsController,
             ),
-            const SizedBox(height: 12),
-
-            ManufactureDatePicker(controller: manufactureDateController),
             const SizedBox(height: 12),
 
             ProductionDateInput(
@@ -127,7 +133,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
               brandController: brandController,
               modelController: modelController,
               serialNumberController: serialNumberController,
-              manufactureDateController: manufactureDateController,
               warrantyYearsController: warrantyYearsController,
               productionDateController: productionDateController,
               locationController: locationController,

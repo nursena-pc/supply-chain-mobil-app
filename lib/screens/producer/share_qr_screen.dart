@@ -31,9 +31,14 @@ class ShareQRScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final qrKey = GlobalKey();
     final cidUrl = "https://ipfs.io/ipfs/$cid";
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final cardColor = isDark ? Colors.grey[900] : Colors.white;
+    final scaffoldBg = isDark ? Colors.black : const Color(0xFFF8F8F8);
+    final borderColor = isDark ? Colors.grey[500] : Colors.grey;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F8F8),
+      backgroundColor: scaffoldBg,
       appBar: AppBar(
         title: const Text("QR Kod ve CID"),
         backgroundColor: Colors.green,
@@ -41,6 +46,7 @@ class ShareQRScreen extends StatelessWidget {
       body: Center(
         child: Card(
           elevation: 8,
+          color: cardColor,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           margin: const EdgeInsets.all(24),
           child: Padding(
@@ -48,7 +54,10 @@ class ShareQRScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text("Ürün QR Kodu", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(
+                  "Ürün QR Kodu",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
+                ),
                 const SizedBox(height: 16),
 
                 // QR görüntüsü
@@ -83,7 +92,7 @@ class ShareQRScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
 
-                // 📤 Paylaş butonu (sadece link olarak gönderir)
+                // 📤 Paylaş butonu
                 ElevatedButton.icon(
                   onPressed: () async {
                     await Share.share(cidUrl);
@@ -105,9 +114,13 @@ class ShareQRScreen extends StatelessWidget {
                     final result = await GallerySaver.saveImage(file.path);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(result == true
-                            ? "📁 QR görseli galeriye kaydedildi"
-                            : "❌ Kaydetme başarısız"),
+                        content: Text(
+                          result == true
+                              ? "📁 QR görseli galeriye kaydedildi"
+                              : "❌ Kaydetme başarısız",
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        backgroundColor: Colors.green[700],
                       ),
                     );
                   },
@@ -121,15 +134,15 @@ class ShareQRScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
 
-                // 🔙 Vazgeç butonu
+                // 🔙 Vazgeç
                 OutlinedButton(
                   onPressed: () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                    side: const BorderSide(color: Colors.grey),
+                    side: BorderSide(color: borderColor!),
                     minimumSize: const Size.fromHeight(48),
                   ),
-                  child: const Text("Vazgeç"),
+                  child: Text("Vazgeç", style: TextStyle(color: textColor)),
                 ),
               ],
             ),
@@ -139,3 +152,8 @@ class ShareQRScreen extends StatelessWidget {
     );
   }
 }
+
+
+
+
+

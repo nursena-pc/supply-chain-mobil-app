@@ -129,14 +129,18 @@ class AuthService {
 
 
   // Google ile Giriş
-  Future<UserModel?> signInWithGoogle() async {
+ // Google ile Giriş (sessiz giriş destekli)
+Future<UserModel?> signInWithGoogle() async {
   try {
     final GoogleSignIn _googleSignIn = GoogleSignIn(
       scopes: ['email'],
-      forceCodeForRefreshToken: true,
     );
 
-    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+    // 1. Sessiz giriş dene (daha önce giriş yaptıysa)
+    GoogleSignInAccount? googleUser = await _googleSignIn.signInSilently();
+
+    // 2. Sessiz giriş başarısızsa kullanıcıdan hesap seçmesini iste
+    googleUser ??= await _googleSignIn.signIn();
 
     if (googleUser == null) {
       debugPrint("🚫 Kullanıcı Google hesabı seçmedi.");
@@ -150,25 +154,31 @@ class AuthService {
       idToken: googleAuth.idToken,
     );
 
+    // Firebase Auth ile giriş yap
     UserCredential result = await _auth.signInWithCredential(credential);
     User? user = result.user;
 
-    final docRef = _firestore.collection('users').doc(user!.uid);
+    if (user == null) return null;
+
+    // Firestore'da kullanıcı var mı kontrol et
+    final docRef = _firestore.collection('users').doc(user.uid);
     final doc = await docRef.get();
 
     if (!doc.exists) {
       await docRef.set({
         'email': user.email,
         'createdAt': FieldValue.serverTimestamp(),
+        'role': 'unknown',
       });
     }
 
-    return _userFromFirebase(user, null);
+    return _userFromFirebase(user, doc.exists ? doc.get('role') : 'unknown');
   } catch (e) {
     debugPrint("Google giriş hatası: $e");
     return null;
   }
 }
+
 
 
   // Kullanıcı çıkışı

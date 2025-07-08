@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tedarik_final/screens/common/qr_scanner_screen.dart';
-import 'package:intl/intl.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   final Map<String, dynamic> productData;
@@ -10,6 +9,11 @@ class ProductDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final subTextColor = isDark ? Colors.grey[300] : Colors.grey[800];
+    final cardColor = isDark ? Colors.grey[850] : Colors.white;
+
     final fullData = productData;
     final device = fullData['device'] ?? {};
     final status = (fullData['status'] ?? '').toString().trim();
@@ -18,13 +22,11 @@ class ProductDetailScreen extends StatelessWidget {
 
     final Map<String, dynamic> timestamps = Map<String, dynamic>.from(timestampsRaw);
 
-    // Stepper için zamanları formatla
     final Map<String, String> formattedTimeMap = {
       for (final entry in timestamps.entries)
         entry.key.toString().trim(): _formatTimestamp(entry.value?.toString())
     };
 
-    // Geçerli statüye karşılık gelen zaman
     final String selectedTime = formattedTimeMap[status] ?? "-";
 
     return Scaffold(
@@ -37,37 +39,38 @@ class ProductDetailScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              _buildStepper(status, formattedTimeMap),
+              _buildStepper(status, formattedTimeMap, isDark),
               const SizedBox(height: 24),
               Card(
                 elevation: 4,
+                color: cardColor,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _infoTile("👤 Sahip", fullData['owner']),
-                      _infoTile("📦 Durum", status),
-                      const Divider(),
-                      const Text("🛠️ Cihaz Bilgileri", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      _infoTile("👤 Sahip", fullData['owner'], textColor),
+                      _infoTile("📦 Durum", status, textColor),
+                      Divider(color: subTextColor),
+                      Text("🛠️ Cihaz Bilgileri", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
                       const SizedBox(height: 10),
-                      _infoTile("Marka", device['brand']),
-                      _infoTile("Model", device['model']),
-                      _infoTile("Seri No", device['serialNumber']),
-                      _infoTile("Üretim Tarihi", device['manufactureDate']),
-                      _infoTile("Garanti (yıl)", device['warrantyYears']?.toString()),
-                      const Divider(),
-                      _infoTile("📍 Konum", fullData['location']),
-                      _infoTile("⏱️ Zaman", selectedTime),
+                      _infoTile("Marka", device['brand'], textColor),
+                      _infoTile("Model", device['model'], textColor),
+                      _infoTile("Seri No", device['serialNumber'], textColor),
+                      _infoTile("Üretim Tarihi", device['manufactureDate'], textColor),
+                      _infoTile("Garanti (yıl)", device['warrantyYears']?.toString(), textColor),
+                      Divider(color: subTextColor),
+                      _infoTile("📍 Konum", fullData['location'], textColor),
+                      _infoTile("⏱️ Zaman", selectedTime, textColor),
                       if (cid.toString().isNotEmpty) ...[
-                        const Divider(),
-                        const Text("📄 CID", style: TextStyle(fontWeight: FontWeight.w500)),
+                        Divider(color: subTextColor),
+                        Text("📄 CID", style: TextStyle(fontWeight: FontWeight.w500, color: textColor)),
                         Row(
                           children: [
-                            Expanded(child: Text(cid.toString(), style: const TextStyle(fontSize: 12))),
+                            Expanded(child: Text(cid.toString(), style: TextStyle(fontSize: 12, color: textColor))),
                             IconButton(
-                              icon: const Icon(Icons.copy),
+                              icon: Icon(Icons.copy, color: textColor),
                               onPressed: () {
                                 Clipboard.setData(ClipboardData(text: cid.toString()));
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -131,7 +134,7 @@ class ProductDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStepper(String status, Map<String, String> timestamps) {
+  Widget _buildStepper(String status, Map<String, String> timestamps, bool isDark) {
     final steps = [
       {'label': 'Üretildi', 'icon': Icons.factory},
       {'label': 'Depoda', 'icon': Icons.warehouse},
@@ -154,22 +157,22 @@ class ProductDetailScreen extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundColor: isCompleted ? Colors.green : Colors.grey[300],
+                backgroundColor: isCompleted ? Colors.green : (isDark ? Colors.grey[700] : Colors.grey[300]),
                 child: Icon(
                   step['icon'] as IconData,
-                  color: isCompleted ? Colors.white : Colors.black26,
+                  color: isCompleted ? Colors.white : (isDark ? Colors.black45 : Colors.black26),
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 label,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: isCompleted ? Colors.green[800] : Colors.grey),
+                style: TextStyle(fontSize: 12, color: isCompleted ? Colors.green[800] : (isDark ? Colors.grey[300] : Colors.grey[600])),
               ),
               Text(
                 time,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 10, color: Colors.grey),
+                style: TextStyle(fontSize: 10, color: isDark ? Colors.grey[400] : Colors.grey),
               ),
             ],
           ),
@@ -178,7 +181,7 @@ class ProductDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _infoTile(String label, dynamic value) {
+  Widget _infoTile(String label, dynamic value, Color textColor) {
     final displayValue = (value == null || value.toString().trim().isEmpty || value.toString() == 'null')
         ? "Belirtilmemiş"
         : value.toString();
@@ -187,31 +190,29 @@ class ProductDetailScreen extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(flex: 3, child: Text(label, style: const TextStyle(fontWeight: FontWeight.w500))),
-          Expanded(flex: 5, child: Text(displayValue)),
+          Expanded(flex: 3, child: Text(label, style: TextStyle(fontWeight: FontWeight.w500, color: textColor))),
+          Expanded(flex: 5, child: Text(displayValue, style: TextStyle(color: textColor))),
         ],
       ),
     );
   }
 
   String _formatTimestamp(String? isoString) {
-  if (isoString == null || isoString.isEmpty) return "-";
-  try {
-    final dt = DateTime.parse(isoString).toLocal();
-    // Türkçe manuel formatlama
-    final monthsTr = [
-      '', 'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
-      'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
-    ];
-    final day = dt.day;
-    final month = monthsTr[dt.month];
-    final year = dt.year;
-    final hour = dt.hour.toString().padLeft(2, '0');
-    final minute = dt.minute.toString().padLeft(2, '0');
-    return '$day $month $year - $hour:$minute';
-  } catch (e) {
-    return "-";
+    if (isoString == null || isoString.isEmpty) return "-";
+    try {
+      final dt = DateTime.parse(isoString).toLocal();
+      final monthsTr = [
+        '', 'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+        'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+      ];
+      final day = dt.day;
+      final month = monthsTr[dt.month];
+      final year = dt.year;
+      final hour = dt.hour.toString().padLeft(2, '0');
+      final minute = dt.minute.toString().padLeft(2, '0');
+      return '$day $month $year - $hour:$minute';
+    } catch (e) {
+      return "-";
+    }
   }
-}
-
 }

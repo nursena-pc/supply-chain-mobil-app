@@ -12,11 +12,9 @@ class StatusDropdown extends StatelessWidget {
 
   static const List<String> statusList = [
     'Üretildi',
-    'Nakliyede',
-    'Satışta',
-    'Kullanımda',
-    'Serviste',
-    'İade Edildi',
+    'Depoda',
+    'Dağıtımda', 
+    'Teslim Edildi'
   ];
 
   @override

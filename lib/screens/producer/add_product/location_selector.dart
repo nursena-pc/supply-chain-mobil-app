@@ -27,17 +27,53 @@ class LocationInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<String>(
-      value: location.isNotEmpty ? location : null,
-      decoration: const InputDecoration(
-        labelText: 'Konum',
-        border: OutlineInputBorder(),
-      ),
-      items: iller.map((il) => DropdownMenuItem(
-        value: il,
-        child: Text(il),
-      )).toList(),
-      onChanged: onChanged,
+    final TextEditingController controller = TextEditingController(text: location);
+
+    return Autocomplete<String>(
+      optionsBuilder: (TextEditingValue textEditingValue) {
+        if (textEditingValue.text == '') return const Iterable<String>.empty();
+        return iller.where((il) =>
+            il.toLowerCase().startsWith(textEditingValue.text.toLowerCase()));
+      },
+      fieldViewBuilder: (context, textController, focusNode, onFieldSubmitted) {
+        textController.text = location;
+        textController.selection =
+            TextSelection.collapsed(offset: location.length);
+
+        return TextField(
+          controller: textController,
+          focusNode: focusNode,
+          onChanged: onChanged,
+          decoration: const InputDecoration(
+            labelText: 'Konum',
+            border: OutlineInputBorder(),
+          ),
+        );
+      },
+      optionsViewBuilder: (context, onSelected, options) {
+        return Align(
+          alignment: Alignment.topLeft,
+          child: Material(
+            elevation: 4,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: options.length,
+              itemBuilder: (BuildContext context, int index) {
+                final option = options.elementAt(index);
+                return InkWell(
+                  onTap: () => onSelected(option),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    color: const Color(0xFFD0ECD4), // Açık yeşil
+                    child: Text(option),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+      onSelected: onChanged,
     );
   }
 }

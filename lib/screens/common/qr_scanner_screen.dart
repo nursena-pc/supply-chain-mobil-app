@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:tedarik_final/services/ipfs_service.dart';
 import 'package:tedarik_final/screens/product/product_detail_screen.dart';
+import 'package:tedarik_final/services/scan_history_service.dart';
+import 'package:tedarik_final/models/scan_history_item.dart';
 
 class QRScannerScreen extends StatefulWidget {
   const QRScannerScreen({super.key});
@@ -41,22 +43,42 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       return;
     }
 
-    try {
-      final content = await IPFSService.fetchIPFSContent(parsedUrl);
+  try {
+  final content = await IPFSService.fetchIPFSContent(parsedUrl);
 
-      if (content != null && content['type'] == 'json') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ProductDetailScreen(productData: content['data']),
-          ),
-        );
-      } else {
-        _showMessage("📄 QR IPFS bağlantısı içeriyor ama içerik geçersiz.");
-      }
-    } catch (e) {
-      _showMessage("❌ QR işlenirken hata oluştu: $e");
-    }
+  if (content != null &&
+      content['type'] == 'json' &&
+      content['data'] != null &&
+      content['data'] is Map &&
+      content['data']['productId'] != null) {
+
+    final productId = content['data']['productId'];
+
+    // ✅ Burada ScanHistoryService örneği oluşturuluyor
+    final scanService = ScanHistoryService();
+
+    await scanService.addToHistory(
+      ScanHistoryItem(
+        productId: productId,
+        cid: parsedUrl,
+        scannedAt: DateTime.now(),
+      ),
+    );
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ProductDetailScreen(productData: content['data']),
+      ),
+    );
+  } else {
+    _showMessage("📄 QR IPFS bağlantısı içeriyor ama içerik geçersiz.");
+  }
+} catch (e) {
+  _showMessage("❌ QR işlenirken hata oluştu: $e");
+}
+
+
   }
 
   void _showMessage(String message) {

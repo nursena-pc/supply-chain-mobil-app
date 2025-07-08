@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tedarik_final/services/ipfs_service.dart';
 import 'package:tedarik_final/screens/producer/share_qr_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class UpdateProductScreen extends StatefulWidget {
   final Map<String, dynamic> ipfsContent;
@@ -85,7 +87,6 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
     previousData['location'] = newLocation;
     previousData['timestamp'] = newTimestamp;
 
-    // ✅ timestamps alanını da güncelle
     final Map<String, dynamic> timestamps = Map<String, dynamic>.from(previousData['timestamps'] ?? {});
     timestamps[newStatus] = newTimestamp;
     previousData['timestamps'] = timestamps;
@@ -93,26 +94,37 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
     final newCid = await IPFSService.uploadJSON(previousData);
 
     if (newCid != null) {
-      final success = await IPFSService.updateProductOnChain(
-        widget.productId,
-        'ipfs://$newCid',
-        newStatus,
-      );
+    final success = await IPFSService.updateProductOnChain(
+  widget.productId,
+  'ipfs://$newCid',
+  newStatus,
+);
 
-      setState(() {
-        _statusMessage = success
-            ? '✅ Güncelleme başarılı. Yeni CID: $newCid'
-            : '⚠️ CID yüklendi ama blockchain kaydı başarısız.';
-      });
+setState(() {
+  _statusMessage = success
+      ? '✅ Güncelleme başarılı. Yeni CID: $newCid'
+      : '⚠️ CID yüklendi ama blockchain kaydı başarısız.';
+});
 
-      if (success && mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ShareQRScreen(cid: newCid),
-          ),
-        );
-      }
+if (success && mounted) {
+  // ✅ Firestore'a update logu ekle
+  final currentUser = FirebaseAuth.instance.currentUser;
+  if (currentUser != null) {
+    await FirebaseFirestore.instance.collection('productHistory').add({
+      'userId': currentUser.uid,
+      'productId': widget.productId,
+      'type': 'update',
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (_) => ShareQRScreen(cid: newCid),
+    ),
+  );
+}
 
     } else {
       setState(() {
@@ -134,6 +146,9 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Ürün Güncelle"),
@@ -145,8 +160,10 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text("📦 Ürün ID: ${widget.productId}",
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(
+                "📦 Ürün ID: ${widget.productId}",
+                style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
+              ),
               const SizedBox(height: 20),
 
               DropdownButtonFormField<String>(
@@ -206,6 +223,11 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
                     : const Icon(Icons.save),
                 label: Text(_isUpdating ? "Güncelleniyor..." : "Kaydet"),
                 onPressed: _isUpdating ? null : _updateProduct,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  minimumSize: const Size.fromHeight(50),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                ),
               ),
 
               const SizedBox(height: 16),
@@ -216,7 +238,7 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
                     color: _statusMessage!.startsWith("✅") ? Colors.green : Colors.red,
                     fontWeight: FontWeight.bold,
                   ),
-                )
+                ),
             ],
           ),
         ),
