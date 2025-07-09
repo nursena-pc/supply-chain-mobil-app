@@ -46,90 +46,129 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  InputDecoration _inputDecoration(String label, Color textColor) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: textColor),
+      filled: true,
+      fillColor: Colors.white,
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+      enabledBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: Colors.black26),
+        borderRadius: BorderRadius.circular(12),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : Colors.black;
-    final bgColor = isDark ? Colors.black : const Color(0xFFEFF4F8);
 
     return Scaffold(
-      backgroundColor: bgColor,
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset('assets/images/login.png', height: 180),
-              const SizedBox(height: 32),
-              Text(
-                "Tedarik Mobil'e Giriş Yap",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: emailController,
-                style: TextStyle(color: textColor),
-                decoration: InputDecoration(
-                  labelText: 'E-mail',
-                  labelStyle: TextStyle(color: textColor),
-                  border: const OutlineInputBorder(),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: isDark ? Colors.grey : Colors.black26),
+      body: SafeArea(
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+               Color.fromARGB(237, 29, 138, 38), // 1. aşama: çok açık
+               Color.fromARGB(214, 184, 236, 186), // 3. aşama: doygun ve uyumlu
+               Color.fromARGB(238, 3, 69, 9), // 1. aşama: çok açık
+               Color.fromARGB(124, 17, 231, 28), // 3. aşama: doygun ve uyumlu
+              ],
+            ),
+          ),
+
+
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('assets/images/login.png', height: 180),
+                  const SizedBox(height: 32),
+                  const Text(
+                    "Tedarik Mobil'e Giriş Yap",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF165A5A), // görselle uyumlu koyu mavi-yeşil
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                style: TextStyle(color: textColor),
-                decoration: InputDecoration(
-                  labelText: 'Şifre',
-                  labelStyle: TextStyle(color: textColor),
-                  border: const OutlineInputBorder(),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: isDark ? Colors.grey : Colors.black26),
+
+                  const SizedBox(height: 24),
+
+                  TextField(
+                    controller: emailController,
+                    style: const TextStyle(color: Colors.black),
+                    decoration: _inputDecoration("E-mail", Colors.black),
                   ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _signInWithEmail,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  minimumSize: const Size.fromHeight(50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                ),
-                child: const Text("Giriş Yap"),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pushNamed(context, '/register'),
-                child: Text(
-                  "Hesabın yok mu? Kayıt ol",
-                  style: TextStyle(color: isDark ? Colors.grey[300] : Colors.black),
-                ),
-              ),
-              Divider(height: 40, color: isDark ? Colors.grey[600] : Colors.black26),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  icon: Image.asset('assets/icons/google.png', height: 24),
-                  label: const Text("Google ile Giriş Yap"),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: textColor,
-                    side: BorderSide(color: isDark ? Colors.grey : Colors.black45),
-                    minimumSize: const Size.fromHeight(50),
+                  const SizedBox(height: 16),
+
+                  TextField(
+                    controller: passwordController,
+                    obscureText: true,
+                    style: const TextStyle(color: Colors.black),
+                    decoration: _inputDecoration("Şifre", Colors.black),
+                  ),
+                  const SizedBox(height: 24),
+
+                  ElevatedButton(
+                    onPressed: _signInWithEmail,
+                   style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Color(0xFF1A7F7F), // buton yazı rengi: görseldeki maviye yakın
+                    elevation: 4,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                   ),
-                  onPressed: _signInWithGoogle,
-                ),
+
+                    child: const Text("Giriş Yap", style: TextStyle(fontSize: 16)),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  TextButton(
+                    onPressed: () => Navigator.pushNamed(context, '/register'),
+                    child: const Text(
+                      "Hesabın yok mu? Kayıt ol",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  Row(
+                    children: const [
+                      Expanded(child: Divider(color: Colors.white)),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: Text("veya", style: TextStyle(color: Colors.white)),
+                      ),
+                      Expanded(child: Divider(color: Colors.white)),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  OutlinedButton.icon(
+                    icon: Image.asset('assets/icons/google.png', height: 24),
+                    label: const Text("Google ile Giriş Yap"),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      side: const BorderSide(color: Colors.white),
+                      minimumSize: const Size.fromHeight(50),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                    ),
+                    onPressed: _signInWithGoogle,
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

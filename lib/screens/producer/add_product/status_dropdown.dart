@@ -13,7 +13,7 @@ class StatusDropdown extends StatelessWidget {
   static const List<String> statusList = [
     'Üretildi',
     'Depoda',
-    'Dağıtımda', 
+    'Dağıtımda',
     'Teslim Edildi'
   ];
 
@@ -21,6 +21,7 @@ class StatusDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
       value: value,
+      dropdownColor: const Color(0xFFD1F5D3), // ✅ Menü arka planı
       decoration: const InputDecoration(
         labelText: 'Durum',
         border: OutlineInputBorder(),
