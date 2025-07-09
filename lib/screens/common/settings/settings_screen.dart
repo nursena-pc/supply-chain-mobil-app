@@ -14,18 +14,31 @@ class SettingsScreen extends StatelessWidget {
     final shouldLogout = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Çıkış Yap"),
-        content: const Text("Çıkış yapmak istediğinize emin misiniz?"),
+        backgroundColor: const Color(0xFFD1F5D3),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          "Çıkış Yap",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        content: const Text(
+          "Çıkış yapmak istediğinize emin misiniz?",
+          style: TextStyle(fontSize: 16),
+        ),
+        actionsPadding: const EdgeInsets.only(bottom: 8, right: 12),
         actions: [
           TextButton(
-            child: const Text("İptal"),
+            child: const Text("İptal", style: TextStyle(color: Colors.deepPurple)),
             onPressed: () => Navigator.pop(context, false),
           ),
           ElevatedButton.icon(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, size: 18),
             label: const Text("Çıkış Yap"),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromARGB(255, 218, 104, 96),
+              backgroundColor: const Color(0xFFD8605E),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             onPressed: () => Navigator.pop(context, true),
           ),
@@ -48,6 +61,7 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final sectionBackground = isDark ? Colors.green[900] : const Color(0xFFD1F5D3);
     final titleStyle = TextStyle(
       fontSize: 16,
       fontWeight: FontWeight.bold,
@@ -65,7 +79,14 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text("👤 Kullanıcı Ayarları", style: titleStyle),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+            decoration: BoxDecoration(
+              color: sectionBackground,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text("👤 Kullanıcı Ayarları", style: titleStyle),
+          ),
           const SizedBox(height: 8),
           ListTile(
             leading: Icon(Icons.person, color: textStyle.color),
@@ -79,12 +100,26 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(),
 
-          Text("🌙 Görünüm", style: titleStyle),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+            decoration: BoxDecoration(
+              color: sectionBackground,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text("🌙 Görünüm", style: titleStyle),
+          ),
           const SizedBox(height: 8),
           const ThemeToggleTile(),
           const Divider(),
 
-          Text("🔐 Güvenlik", style: titleStyle),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+            decoration: BoxDecoration(
+              color: sectionBackground,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text("🔐 Güvenlik", style: titleStyle),
+          ),
           const SizedBox(height: 8),
           ListTile(
             leading: Icon(Icons.lock_reset, color: textStyle.color),
@@ -103,25 +138,40 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(),
 
-          Text("❓ Yardım", style: titleStyle),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+            decoration: BoxDecoration(
+              color: sectionBackground,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text("❓ Yardım", style: titleStyle),
+          ),
           const SizedBox(height: 8),
+          ListTile(
+            leading: const Icon(Icons.question_answer),
+            title: const Text('Sıkça Sorulan Sorular'),
+            onTap: () => Navigator.pushNamed(context, '/faq'),
+          ),
           ListTile(
             leading: Icon(Icons.feedback, color: textStyle.color),
             title: Text('Geri Bildirim Gönder', style: textStyle),
-            onTap: () {
-              Navigator.pushNamed(context, '/feedback');
-            },
+            onTap: () => Navigator.pushNamed(context, '/feedback'),
           ),
           ListTile(
             leading: Icon(Icons.info, color: textStyle.color),
             title: Text('Gizlilik Politikası', style: textStyle),
-            onTap: () {
-              Navigator.pushNamed(context, '/privacy');
-            },
+            onTap: () => Navigator.pushNamed(context, '/privacy'),
           ),
           const Divider(),
 
-          Text("ℹ️ Uygulama Bilgisi", style: titleStyle),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+            decoration: BoxDecoration(
+              color: sectionBackground,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text("ℹ️ Uygulama Bilgisi", style: titleStyle),
+          ),
           const SizedBox(height: 8),
           ListTile(
             leading: Icon(Icons.info_outline, color: textStyle.color),

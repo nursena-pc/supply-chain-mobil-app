@@ -220,8 +220,11 @@ if (success && mounted) {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       )
-                    : const Icon(Icons.save),
-                label: Text(_isUpdating ? "Güncelleniyor..." : "Kaydet"),
+                    : const Icon(Icons.save, color: Colors.white), // ✅ ikon da beyaz
+                label: Text(
+                  _isUpdating ? "Güncelleniyor..." : "Kaydet",
+                  style: const TextStyle(color: Colors.white), // ✅ yazı beyaz
+                ),
                 onPressed: _isUpdating ? null : _updateProduct,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
@@ -229,6 +232,7 @@ if (success && mounted) {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
               ),
+
 
               const SizedBox(height: 16),
               if (_statusMessage != null)

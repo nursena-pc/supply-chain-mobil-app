@@ -14,7 +14,7 @@ import 'screens/common/settings/feedback_screen.dart';
 import 'screens/common/settings/privacy_policy_screen.dart';
 import 'screens/common/settings/theme_provider.dart';
 import 'screens/product/product_detail_screen_from_id.dart';
-
+import 'screens/common/settings/faq_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
@@ -77,7 +77,7 @@ class MyApp extends StatelessWidget {
           final productId = ModalRoute.of(context)!.settings.arguments as String;
           return ProductDetailScreenFromId(productId: productId);
         },
-
+        '/faq': (context) => const FAQScreen(),
         // Gerekirse daha fazla ekran buraya eklenebilir
       },
     );

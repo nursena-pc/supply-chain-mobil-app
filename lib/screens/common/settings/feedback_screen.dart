@@ -76,11 +76,24 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: _isSending ? null : _sendFeedback,
-              icon: const Icon(Icons.send),
-              label: const Text("Gönder"),
-            )
+            const SizedBox(height: 20),
+ElevatedButton.icon(
+  onPressed: _isSending ? null : _sendFeedback,
+  icon: const Icon(Icons.send, color: Colors.white),
+  label: const Text(
+    "Gönder",
+    style: TextStyle(color: Colors.white),
+  ),
+  style: ElevatedButton.styleFrom(
+    backgroundColor: Colors.green, // yeşil arka plan
+    foregroundColor: Colors.white, // ikon & metin rengi
+    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+  ),
+),
+
           ],
         ),
       ),

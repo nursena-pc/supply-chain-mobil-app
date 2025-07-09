@@ -115,10 +115,14 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: _saveProfile,
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-              child: const Text("Kaydet"),
-            ),
+  onPressed: _saveProfile,
+  style: ElevatedButton.styleFrom(
+    backgroundColor: Colors.green,
+    foregroundColor: Colors.white, // ✅ Yazı rengini beyaz yapar
+  ),
+  child: const Text("Kaydet"),
+),
+
           ],
         ),
       ),

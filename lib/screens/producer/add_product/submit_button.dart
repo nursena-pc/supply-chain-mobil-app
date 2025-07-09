@@ -92,7 +92,13 @@ class SubmitButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       ),
-      child: const Text("Ürünü Kaydet", style: TextStyle(fontSize: 16)),
-    );
+    child: const Text(
+      "Ürünü Kaydet",
+      style: TextStyle(
+        fontSize: 16,
+        color: Colors.white,
+       ),
+     ),
+     ); // ✅ Yazı beyaz    );
   }
 }

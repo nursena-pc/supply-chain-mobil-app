@@ -78,49 +78,61 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     return "$count ürün $status".toLowerCase();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Analiz")),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Toplam Ürün: $_total",
-                      style: Theme.of(context).textTheme.titleMedium),
-                  const SizedBox(height: 16),
-                  const Text("Şehir Bazlı Dağılım",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    height: 250,
-                    child: BarChartCityDistribution(data: _cityData),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text("Detaylar",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  ..._cityData.map((item) {
-                    return ListTile(
-                      leading: const Icon(Icons.location_city),
-                      title: Text(item.city),
-                      subtitle: Text(_buildStatusText(item.city)),
-                      trailing: Text('${item.count} ürün'),
-                    );
-                  }).toList(),
-                  if (_brandCounts.isNotEmpty) ...[
-                    const SizedBox(height: 24),
-                    const Text("Ürün Marka Dağılımı",
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+  appBar: AppBar(
+    title: const Text("Analiz"),
+    backgroundColor: Colors.green, // 🍀 yeşil arka plan
+    foregroundColor:  Colors.black // başlık ve geri tuşu beyaz
+  ),
+    body: _loading
+        ? const Center(child: CircularProgressIndicator())
+        : _total == 0
+            ? const Center(
+                child: Text(
+                  "Analizi yapılacak ürün bulunmamaktadır.",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+              )
+            : SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Toplam Ürün: $_total",
+                        style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 16),
+                    const Text("Şehir Bazlı Dağılım",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      height: 250,
+                      child: BarChartCityDistribution(data: _cityData),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text("Detaylar",
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
-                    PieChartBrandDistribution(brandCounts: _brandCounts),
-                  ]
-                ],
+                    ..._cityData.map((item) {
+                      return ListTile(
+                        leading: const Icon(Icons.location_city),
+                        title: Text(item.city),
+                        subtitle: Text(_buildStatusText(item.city)),
+                        trailing: Text('${item.count} ürün'),
+                      );
+                    }).toList(),
+                    if (_brandCounts.isNotEmpty) ...[
+                      const SizedBox(height: 24),
+                      const Text("Ürün Marka Dağılımı",
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      PieChartBrandDistribution(brandCounts: _brandCounts),
+                    ]
+                  ],
+                ),
               ),
-            ),
-    );
-  }
+  );
+}
+
 }

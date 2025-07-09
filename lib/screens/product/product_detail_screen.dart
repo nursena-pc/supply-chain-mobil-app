@@ -104,7 +104,10 @@ class ProductDetailScreen extends StatelessWidget {
                   );
                 },
                 icon: const Icon(Icons.qr_code),
-                label: const Text("QR'ı Tekrar Tara"),
+                label: const Text(
+                  "QR'ı Tekrar Tara",
+                  style: TextStyle(color: Colors.white), // ✅ yazı rengi beyaz
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 78, 163, 81),
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -119,7 +122,10 @@ class ProductDetailScreen extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
                 icon: const Icon(Icons.home),
-                label: const Text("Ana Menüye Dön"),
+                label: const Text(
+                  "Ana Menüye Dön",
+                  style: TextStyle(color: Colors.white), // ✅ yazı rengi beyaz
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey,
                   padding: const EdgeInsets.symmetric(vertical: 16),
